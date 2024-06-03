@@ -1,35 +1,65 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-library work;
-use work.all;
+entity adder4b is
+    port (
+        x, y : in std_logic_vector (3 downto 0);
+        c_in :in std_logic;
+        c_out : out std_logic;
+        result : out std_logic_vector (3 downto 0)
+    );
+end entity;
 
-entity AdderSub is
-    port ( X,Y : in std_logic_vector(3 downto 0);
-           sel : in std_logic;
-           cout : out std_logic;
-           Res : out std_logic_vector(3 downto 0)
-           );
-end AdderSub;
+architecture adder4b_arch of adder4b is
+    signal c0, c1, c2 : std_logic;
 
-architecture Structure of AdderSub is
-component mux2to1
-Port( m0, m1 : in std_logic_vector(3 downto 0);
-      sel : in std_logic;
-      mout : out std_logic_vector(3 downto 0)
-      );
-end component;
-component Adder_4bits
-Port ( X, Y : in std_logic_vector(3 downto 0);
-      cin : in std_logic;
-      cout : out std_logic;
-      s : out std_logic_vector(3 downto 0)
-      );
-end component;
 
-signal M : std_logic_vector(3 downto 0);
+    component full_adder is
+        port (
+            a, b, c_in : in std_logic;
+            res, c_out : out std_logic
+        );
+    end component;
+
+
 begin
+    fa_1: full_adder
+    port map(
+        a => x(0),
+        b => y(0),
+        c_in => c_in,
+        res => result(0),
+        c_out => c0
+    );
 
-U0 : mux2to1 port map (m0 => Y, m1 => not Y, sel => sel, mout => M);
-U1 : Adder_4bits port map (X=>X, Y=>M, cin=>sel, S => Res, cout => cout);
-end architecture Structure;
+    fa_2: full_adder
+    port map(
+        a => x(1),
+        b => y(1),
+        c_in => c0,
+        res => result(1),
+        c_out => c1
+    );
+
+    fa_3: full_adder
+    port map(
+        a => x(2),
+        b => y(2),
+        c_in => c1,
+        res => result(2),
+        c_out => c2
+    );
+
+    fa_4: full_adder
+    port map(
+        a => x(3),
+        b => y(3),
+        c_in => c2,
+        res => result(3),
+        c_out => c_out
+    );
+end architecture;
+
+
+

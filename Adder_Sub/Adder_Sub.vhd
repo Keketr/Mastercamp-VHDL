@@ -1,35 +1,59 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-entity Adder_Sub is
-    Port (
-        X : in STD_LOGIC_VECTOR(31 downto 0);  -- First input
-        Y : in STD_LOGIC_VECTOR(31 downto 0);  -- Second input
-        R : in STD_LOGIC_VECTOR(31 downto 0);  -- Result register, can be input as well
-        Op : in STD_LOGIC_VECTOR(2 downto 0);  -- Operation code
-        Clk : in STD_LOGIC;                    -- Clock signal
-        Result : out STD_LOGIC_VECTOR(31 downto 0)  -- Output result
+entity add_sub is
+    port (
+        x, y : in std_logic_vector (3 downto 0);
+        -- c_in :in std_logic;
+        selector : in std_logic;
+        c_out : out std_logic;
+        result : out std_logic_vector (3 downto 0)
     );
-end Adder_Sub;
+end entity;
 
-architecture Behavioral of Adder_Sub is
+architecture add_sub_arch of add_sub is
+    signal m : std_logic_vector (3 downto 0);
+
+    component adder4b is
+        port (
+            x, y : in std_logic_vector (3 downto 0);
+            c_in :in std_logic;
+            c_out : out std_logic;
+            result : out std_logic_vector (3 downto 0)
+        );
+    end component;
+
+    component mux2to1 is
+        generic (n : integer := 4);
+        port (
+            in_1 : in std_logic_vector (n-1 downto 0);
+            in_2 : in std_logic_vector (n-1 downto 0);
+            selector : in std_logic;
+            out_1 : out std_logic_vector (n-1 downto 0)
+        );
+    end component;
+
+    signal not_y : std_logic_vector (3 downto 0) := not y;
 begin
-    process(Clk)
-    begin
-        if rising_edge(Clk) then
-            case Op is
-                when "000" =>  -- X + Y
-                    Result <= std_logic_vector(signed(X) + signed(Y));
-                when "001" =>  -- X - Y
-                    Result <= std_logic_vector(signed(X) - signed(Y));
-                when "010" =>  -- R + Y
-                    Result <= std_logic_vector(signed(R) + signed(Y));
-                when "011" =>  -- R - Y
-                    Result <= std_logic_vector(signed(R) - signed(Y));
-                when others =>
-                    Result <= (others => '0');  
-            end case;
-        end if;
-    end process;
-end Behavioral;
+    not_y <= not y;
+
+    mux2to1_inst: mux2to1
+    port map(
+        in_1 => y,
+        in_2 => not_y,
+        selector => selector,
+        out_1 => m
+    );
+
+    fa: adder4b
+    port map(
+        x => x,
+        y => m,
+        c_in => selector,
+        c_out => c_out,
+        result => result
+    );
+
+end architecture;
+

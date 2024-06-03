@@ -1,49 +1,40 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
 
 
+entity controller is
+    port (
+        op : in std_logic_vector (2 downto 0);
+        logic_unit_sel : out std_logic_vector (1 downto 0);
+        mux3_sel : out std_logic_vector (1 downto 0);
+        add_sub_sel : out std_logic;
+        mux2_sel : out std_logic
+    );
+end entity;
 
-entity Operateur is
-  Port ( op : in std_logic_vector(2 downto 0);
-         SAS : out std_logic;
-         SM2, SLU : out std_logic_vector(1 downto 0);
-         SM1 : out std_logic
-         );
-end Operateur;
-
-architecture Structure of Operateur is
-
+architecture controller_arch of controller is
 begin
-    process(op, SAS, SM2, SLU, SM1) is
-    begin
-        if op ="000" then
-            SAS <= '0';
-            SM1 <= '0';
-            SM2 <= "00";
-        elsif op = "001" then
-            SAS <= '1';
-            SM1 <= '0';
-            SM2 <= "00";
-        elsif op = "010" then
-            SAS <= '0';
-            SM1 <= '1';
-            SM2 <= "00";
-        elsif op = "011" then
-            SAS <= '1';
-            SM1 <= '1';
-            SM2 <= "00";
-        elsif op = "100" then
-            SM2 <= "01";
-        elsif op = "101" then
-            SM2 <= "10";
-            SLU <= "01";
-        elsif op = "110" then
-            SM2 <= "10";
-            SLU <= "10";
-        elsif op = "110" then
-            SM2 <= "10";
-            SLU <= "11";
-        end if;
-    end process;
 
-end Structure;
+    with op select
+        mux2_sel <= '0' when "000" | "001",
+                    '1' when "010" | "011",
+                    'X' when others;
+    
+    with op select
+        add_sub_sel <= '0' when "000" | "010",
+                    '1' when "001" | "011",
+                    'X' when others;
+                    
+    with op select
+        logic_unit_sel <= "01" when "101",
+                        "10" when "110",
+                        "11" when "111",
+                        "XX" when others;
+
+    with op select
+        mux3_sel <= "01" when "100",
+                    "10" when "110" | "111" | "101",
+                    "00" when "000" | "001" | "010" | "011",
+                    "XX" when others;
+
+end architecture;

@@ -1,31 +1,22 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
 
-entity Register is
-    generic (
-        WIDTH : integer := 32  -- Specify the width of the register, default is 32 bits
-    );
+entity reg8 is
     port (
-        DataIn : in  STD_LOGIC_VECTOR (WIDTH-1 downto 0);
-        Reset : in  STD_LOGIC;
-        Enable : in  STD_LOGIC;
-        Clock : in  STD_LOGIC;
-        DataOut : out  STD_LOGIC_VECTOR (WIDTH-1 downto 0)
+        in_1 : in std_logic_vector (7 downto 0);
+        clock : in std_logic;
+        out_1 : out std_logic_vector (7 downto 0)
     );
 end entity;
 
-architecture Behavioral of Register is
+architecture reg8_arch of reg8 is
 begin
 
-    process (Clock, Reset)
+    process (clock)
     begin
 
-        if Reset = '1' then
-            DataOut <= (others => '0');  -- Clear the register on reset
-        elsif rising_edge(Clock) then
-            if Enable = '1' then
-                DataOut <= DataIn;  -- Load the input into the register if enabled
-            end if;
+        if rising_edge(clock) then
+            out_1 <= in_1;
         end if;
 
     end process;

@@ -1,40 +1,27 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
 
-library work;
-use work.all;
-
-entity clk_management is
-    port (
-        reset : in std_logic;
-        clk : in std_logic;
-        CE_debounce : out std_logic
+entity clk_man is
+    port(
+        clkin : in std_logic;
+        clkout : out std_logic
     );
-end clk_management;
+end entity;
 
-architecture Structure of clk_management is
-
-    signal counter : unsigned (25 downto 0) := (others => '0');
-    signal pulse : std_logic := '0';
-
+architecture clk_man_arch of clk_man is
 begin
-    process (clk, reset) is
+    process(clkin)
+        variable cnt : natural range 0 to 100000000;
     begin
-        if reset = '1' then
-            counter <= (others => '0');
-            pulse <= '0';
-        elsif rising_edge(clk) then 
-            counter <= counter + 1;
-            if counter = 100000000 - 1 then
-                counter <= (others => '0');
-                pulse <= '1';
-            else
-                pulse <= '0';
+        if rising_edge(clkin) then
+            clkout <= '0';
+            cnt := cnt +1;
+
+            if cnt = 100000000 then
+                cnt := 0;
+                clkout <= '1';
             end if;
+
         end if;
     end process;
-
-    CE_debounce <= pulse;
-
-end Structure;
+end architecture;

@@ -1,29 +1,23 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;  -- For using unsigned data types
+library ieee;
+use ieee.std_logic_1164.all;
 
-entity Logic_Unit is
-    Port (
-        X : in STD_LOGIC_VECTOR(31 downto 0);    -- First operand
-        Y : in STD_LOGIC_VECTOR(31 downto 0);    -- Second operand (not used for NOT operation)
-        Op : in STD_LOGIC_VECTOR(2 downto 0);    -- Operation selector, 3-bit to select logic function
-        Result : out STD_LOGIC_VECTOR(31 downto 0) -- Result of the logic operation
+entity logic_unit is
+    generic (n : integer := 4);
+    port (
+        in_1, in_2 : in std_logic_vector (n-1 downto 0);
+        selector : in std_logic_vector (1 downto 0);
+        out_1 : out std_logic_vector (n-1 downto 0)
     );
-end Logic_Unit;
+end entity;
 
-architecture Behavioral of Logic_Unit is
+architecture logic_unit_arch of logic_unit is
 begin
-    process(X, Y, Op)
-    begin
-        case Op is
-            when "101" =>  -- AND operation
-                Result <= X and Y;
-            when "110" =>  -- OR operation
-                Result <= X or Y;
-            when "111" =>  -- NOT operation (only X is used)
-                Result <= not X;
-            when others => 
-                Result <= (others => '0');  -- Default case to handle undefined operations
-        end case;
-    end process;
-end Behavioral;
+
+    with selector select
+        out_1 <= in_1 and in_2 when "01",
+                in_1 or in_2 when "10",
+                not in_1 when "11",
+                (others => 'X') when others;
+
+end architecture;
+

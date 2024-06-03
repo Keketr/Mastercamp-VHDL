@@ -1,21 +1,18 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-
-entity sign is 
-    Port (
-        Din : in STD_LOGIC_VECTOR(3 downto 0) -- Sortie de l'adder/sub
-        Dout : out STD_LOGIC_VECTOR(7 downto 0) -- Output add sign bit
-
-
+entity sign_ext is
+    port (
+        e: in std_logic_vector (3 downto 0);
+        s : out std_logic_vector (7 downto 0)
     );
-end sign;
+end entity;
 
-architecture Behavioral of sign is 
+architecture sign_ext_arch of sign_ext is
 begin
 
-    
-    Dout(0) <= Din(3) & Din(3) & Din(3) & Din(3) & Din ; -- Sign bit
+    s(7 downto 4) <= (others => e(3));
+    s(3 downto 0) <= e;
 
-end architecture sign;
+end architecture;
