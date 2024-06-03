@@ -1,34 +1,33 @@
-library ieee;
-use ieee.std_logic_1164.all;
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
 
-entity nbuffer is
+entity Register is
     generic (
-        n : integer := 4
+        WIDTH : integer := 32  -- Specify the width of the register, default is 32 bits
     );
     port (
-        e1 : in std_logic_vector (n-1 downto 0);
-        reset : in std_logic;
-        enable : in std_logic;
-        clock : in std_logic;
-        s1 : out std_logic_vector (n-1 downto 0)
+        DataIn : in  STD_LOGIC_VECTOR (WIDTH-1 downto 0);
+        Reset : in  STD_LOGIC;
+        Enable : in  STD_LOGIC;
+        Clock : in  STD_LOGIC;
+        DataOut : out  STD_LOGIC_VECTOR (WIDTH-1 downto 0)
     );
 end entity;
 
-architecture nbuffer_arch of nbuffer is
+architecture Behavioral of Register is
 begin
 
-    process (clock, reset)
+    process (Clock, Reset)
     begin
 
-        if reset = '1' then
-            s1 <= (others => '0');
-        elsif rising_edge(clock) then
-            if enable = '1' then
-                s1 <= e1;
+        if Reset = '1' then
+            DataOut <= (others => '0');  -- Clear the register on reset
+        elsif rising_edge(Clock) then
+            if Enable = '1' then
+                DataOut <= DataIn;  -- Load the input into the register if enabled
             end if;
         end if;
 
     end process;
 
 end architecture;
-
